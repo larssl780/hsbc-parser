@@ -6,7 +6,7 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import datetime, date
 from pathlib import Path
-
+from pypdf import PdfReader
 from more_itertools import consecutive_groups
 
 from .common import parse_date, is_empty, parse_money, Transaction
@@ -132,14 +132,11 @@ def _cleanup_table(dirty_table: list[str]) -> list[list[str]]:
 
 
 def extract_transactions(pdf: Path) -> Iterator[Transaction]:
-    text = subprocess.check_output([
-        'pdftotext',
-        '-q',  # craps with ' Invalid Font Weight' warning otherwise
-        '-layout',  # without -layout it seems to split the table in multiple lines in weird way
-        pdf,
-        '-',  # output to stdout
-    ], text=True)
-
+    reader = PdfReader(pdf)
+    text = ''
+    for page in reader.pages:
+      text += page.extract_text() + "\n"
+    
     dirty_tables: list[list[str]] = list(_extract_tables(text))
     assert len(dirty_tables) > 0, pdf  # just in case
 
