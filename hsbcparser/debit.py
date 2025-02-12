@@ -136,7 +136,7 @@ def extract_transactions(pdf: Path) -> Iterator[Transaction]:
     text = ''
     for page in reader.pages:
       text += page.extract_text() + "\n"
-    text_file_path = pdf.replace('.pdf', '.txt')
+    text_file_path = pdf.name.replace('.pdf', '.txt')
     with open(text_file_path, 'w') as fp:
         fp.write(text)
     print("Wrote text contents to %s " % text_file_path)
