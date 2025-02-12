@@ -6,7 +6,8 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import datetime, date
 from pathlib import Path
-from pypdf import PdfReader
+# from pypdf import PdfReader
+import pdfplumber
 from more_itertools import consecutive_groups
 
 from .common import parse_date, is_empty, parse_money, Transaction
@@ -133,9 +134,12 @@ def _cleanup_table(dirty_table: list[str]) -> list[list[str]]:
 
 def extract_transactions(pdf: Path) -> Iterator[Transaction]:
     reader = PdfReader(pdf)
-    text = ''
-    for page in reader.pages:
-      text += page.extract_text() + "\n"
+    with pdfplumber.open(pdf) as pdf_:
+    
+        first_page = pdf_.pages[0]
+        text  = first_page.extract_text()
+        # for page in reader.pages:
+        #   text += page.extract_text() + "\n"
     text_file_path = pdf.name.replace('.pdf', '.txt')
     with open(text_file_path, 'w') as fp:
         fp.write(text)
