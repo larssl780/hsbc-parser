@@ -4,7 +4,7 @@ from typing import NamedTuple, List
 from subprocess import check_output
 import csv
 
-import pdfquery # type: ignore
+# import pdfquery # type: ignore
 
 class Transaction(NamedTuple):
     received: date
